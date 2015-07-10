@@ -198,7 +198,7 @@ MultiSwitchArg::shortID(const std::string& val) const
 inline std::string 
 MultiSwitchArg::longID(const std::string& val) const
 {
-	return Arg::longID(val) + "  (accepted multiple times)";
+	return Arg::longID(val) + " (accepted multiple times)";
 }
 
 inline void

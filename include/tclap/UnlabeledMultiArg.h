@@ -278,7 +278,7 @@ template<class T>
 std::string UnlabeledMultiArg<T>::longID(const std::string& val) const
 {
 	static_cast<void>(val); // Ignore input, don't warn
-	return std::string("<") + _typeDesc + ">  (accepted multiple times)";
+	return std::string("<") + _typeDesc + "> (accepted multiple times)";
 }
 
 template<class T>
