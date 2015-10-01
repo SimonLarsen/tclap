@@ -78,9 +78,14 @@ class CmdLine : public CmdLineInterface
 		std::list<Arg*> _argList;
 
 		/**
-		 * The name of the program.  Set to argv[0].
+		 * The name of the program.
 		 */
 		std::string _progName;
+
+		/**
+		 * The path to the program. Set to argv[0].
+		 */
+		std::string _progPath;
 
 		/**
 		 * A message used to describe the program.  Used in the usage output.
@@ -91,6 +96,11 @@ class CmdLine : public CmdLineInterface
 		 * The version to be displayed with the --version switch.
 		 */
 		std::string _version;
+
+		/**
+		 * Author of program to be displayed with the --version switch.
+		 */
+		std::string _author;
 
 		/**
 		 * The number of arguments that are required to be present on
@@ -145,7 +155,7 @@ class CmdLine : public CmdLineInterface
 		 * into a single argument.
 		 * \param s - The message to be used in the usage.
 		 */
-		bool _emptyCombined(const std::string& s);
+		bool _emptyCombined(const std::string &s);
 
 		/**
 		 * Perform a delete ptr; operation on ptr when this object is deleted.
@@ -162,8 +172,8 @@ private:
 		/**
 		 * Prevent accidental copying.
 		 */
-		CmdLine(const CmdLine& rhs);
-		CmdLine& operator=(const CmdLine& rhs);
+		CmdLine(const CmdLine &rhs);
+		CmdLine &operator=(const CmdLine &rhs);
 
 		/**
 		 * Encapsulates the code common to the constructors
@@ -194,13 +204,18 @@ private:
 		 * the argument flag/name from the value.  Defaults to ' ' (space).
 		 * \param version - The version number to be used in the
 		 * --version switch.
+		 * \param author - The author to be used in the --version switch.
 		 * \param helpAndVersion - Whether or not to create the Help and
 		 * Version switches. Defaults to true.
 		 */
-		CmdLine(const std::string& message,
-				const char delimiter = ' ',
-				const std::string& version = "none",
-				bool helpAndVersion = true);
+		CmdLine(
+			const std::string &name,
+			const std::string &message,
+			const std::string &version,
+			const std::string &author,
+			const char delimiter = ' ',
+			bool helpAndVersion = true
+		);
 
 		/**
 		 * Deletes any resources allocated by a CmdLine object.
@@ -211,13 +226,13 @@ private:
 		 * Adds an argument to the list of arguments to be parsed.
 		 * \param a - Argument to be added.
 		 */
-		void add( Arg& a );
+		void add(Arg &a);
 
 		/**
 		 * An alternative add.  Functionally identical.
 		 * \param a - Argument to be added.
 		 */
-		void add( Arg* a );
+		void add(Arg* a);
 
 		/**
 		 * Add two Args that will be xor'd.  If this method is used, add does
@@ -225,14 +240,14 @@ private:
 		 * \param a - Argument to be added and xor'd.
 		 * \param b - Argument to be added and xor'd.
 		 */
-		void xorAdd( Arg& a, Arg& b );
+		void xorAdd(Arg &a, Arg &b);
 
 		/**
 		 * Add a list of Args that will be xor'd.  If this method is used,
 		 * add does not need to be called.
 		 * \param xors - List of Args to be added and xor'd.
 		 */
-		void xorAdd( std::vector<Arg*>& xors );
+		void xorAdd(std::vector<Arg*> &xors);
 
 		/**
 		 * Parses the command line.
@@ -246,7 +261,7 @@ private:
 		 * \param args - A vector of strings representing the args.
 		 * args[0] is still the program name.
 		 */
-		void parse(std::vector<std::string>& args);
+		void parse(std::vector<std::string> &args);
 
 		/**
 		 *
@@ -261,22 +276,32 @@ private:
 		/**
 		 *
 		 */
-		std::string& getVersion();
+		std::string &getVersion();
 
 		/**
 		 *
 		 */
-		std::string& getProgramName();
+		std::string &getAuthor();
 
 		/**
 		 *
 		 */
-		std::list<Arg*>& getArgList();
+		std::string &getProgramName();
 
 		/**
 		 *
 		 */
-		XorHandler& getXorHandler();
+		std::string &getProgramPath();
+
+		/**
+		 *
+		 */
+		std::list<Arg*> &getArgList();
+
+		/**
+		 *
+		 */
+		XorHandler &getXorHandler();
 
 		/**
 		 *
@@ -286,7 +311,7 @@ private:
 		/**
 		 *
 		 */
-		std::string& getMessage();
+		std::string &getMessage();
 
 		/**
 		 *
@@ -320,145 +345,149 @@ private:
 //Begin CmdLine.cpp
 ///////////////////////////////////////////////////////////////////////////////
 
-inline CmdLine::CmdLine(const std::string& m,
-                        char delim,
-                        const std::string& v,
-                        bool help )
-    :
-  _argList(std::list<Arg*>()),
-  _progName("not_set_yet"),
-  _message(m),
-  _version(v),
-  _numRequired(0),
-  _delimiter(delim),
-  _xorHandler(XorHandler()),
-  _argDeleteOnExitList(std::list<Arg*>()),
-  _visitorDeleteOnExitList(std::list<Visitor*>()),
-  _output(0),
-  _handleExceptions(true),
-  _userSetOutput(false),
-  _helpAndVersion(help)
+inline CmdLine::CmdLine(
+	const std::string &name,
+	const std::string &message,
+	const std::string &version,
+	const std::string &author,
+	char delim,
+	bool help
+)
+: _argList(std::list<Arg*>())
+, _progName(name)
+, _progPath("not_set_yet")
+, _message(message)
+, _version(version)
+, _author(author)
+, _numRequired(0)
+, _delimiter(delim)
+, _xorHandler(XorHandler())
+, _argDeleteOnExitList(std::list<Arg*>())
+, _visitorDeleteOnExitList(std::list<Visitor*>())
+, _output(0)
+, _handleExceptions(true)
+, _userSetOutput(false)
+, _helpAndVersion(help)
 {
 	_constructor();
 }
 
-inline CmdLine::~CmdLine()
-{
+inline CmdLine::~CmdLine() {
 	ClearContainer(_argDeleteOnExitList);
 	ClearContainer(_visitorDeleteOnExitList);
 
-	if ( !_userSetOutput ) {
+	if(!_userSetOutput) {
 		delete _output;
 		_output = 0;
 	}
 }
 
-inline void CmdLine::_constructor()
-{
+inline void CmdLine::_constructor() {
 	_output = new StdOutput;
 
-	Arg::setDelimiter( _delimiter );
+	Arg::setDelimiter(_delimiter);
 
 	Visitor* v;
 
-	if ( _helpAndVersion )
-	{
-		v = new HelpVisitor( this, &_output );
-		SwitchArg* help = new SwitchArg("h","help",
-		                      "Displays usage information and exits.",
-		                      false, v);
-		add( help );
+	if (_helpAndVersion) {
+		v = new HelpVisitor(this, &_output);
+		SwitchArg* help = new SwitchArg(
+			"h","help",
+			"Displays usage information and exits.",
+			false, v
+		);
+		add(help);
 		deleteOnExit(help);
 		deleteOnExit(v);
 
-		v = new VersionVisitor( this, &_output );
-		SwitchArg* vers = new SwitchArg("","version",
-		                      "Displays version information and exits.",
-		                      false, v);
-		add( vers );
+		v = new VersionVisitor(this, &_output);
+		SwitchArg* vers = new SwitchArg(
+			"","version",
+			"Displays version information and exits.",
+			false, v
+		);
+		add(vers);
 		deleteOnExit(vers);
 		deleteOnExit(v);
 	}
 
 	v = new IgnoreRestVisitor();
-	SwitchArg* ignore  = new SwitchArg(Arg::flagStartString(),
-	          Arg::ignoreNameString(),
-	          "Ignores the rest of the labeled arguments following this flag.",
-	          false, v);
-	add( ignore );
+	SwitchArg* ignore = new SwitchArg(
+		Arg::flagStartString(),
+		Arg::ignoreNameString(),
+		"Ignores the rest of the labeled arguments following this flag.",
+		false, v
+	);
+	add(ignore);
 	deleteOnExit(ignore);
 	deleteOnExit(v);
 }
 
-inline void CmdLine::xorAdd( std::vector<Arg*>& ors )
-{
-	_xorHandler.add( ors );
+inline void CmdLine::xorAdd(std::vector<Arg*> &ors) {
+	_xorHandler.add(ors);
 
-	for (ArgVectorIterator it = ors.begin(); it != ors.end(); it++)
-	{
+	for (ArgVectorIterator it = ors.begin(); it != ors.end(); it++) {
 		(*it)->forceRequired();
-		(*it)->setRequireLabel( "OR required" );
-		add( *it );
+		(*it)->setRequireLabel("OR required");
+		add(*it);
 	}
 }
 
-inline void CmdLine::xorAdd( Arg& a, Arg& b )
-{
+inline void CmdLine::xorAdd(Arg &a, Arg &b) {
 	std::vector<Arg*> ors;
-	ors.push_back( &a );
-	ors.push_back( &b );
-	xorAdd( ors );
+	ors.push_back(&a);
+	ors.push_back(&b);
+	xorAdd(ors);
 }
 
-inline void CmdLine::add( Arg& a )
-{
-	add( &a );
+inline void CmdLine::add(Arg &a) {
+	add(&a);
 }
 
-inline void CmdLine::add( Arg* a )
-{
-	for( ArgListIterator it = _argList.begin(); it != _argList.end(); it++ )
-		if ( *a == *(*it) )
-			throw( SpecificationException(
-			        "Argument with same flag/name already exists!",
-			        a->longID() ) );
+inline void CmdLine::add( Arg* a ) {
+	for( ArgListIterator it = _argList.begin(); it != _argList.end(); it++ ) {
+		if ( *a == *(*it) ) {
+			throw(SpecificationException(
+				"Argument with same flag/name already exists!",
+				a->longID()
+			));
+		}
+	}
 
 	a->addToList( _argList );
 
-	if ( a->isRequired() )
+	if ( a->isRequired()) {
 		_numRequired++;
+	}
 }
 
 
-inline void CmdLine::parse(int argc, const char * const * argv)
-{
-		// this step is necessary so that we have easy access to
-		// mutable strings.
-		std::vector<std::string> args;
-		for (int i = 0; i < argc; i++)
-			args.push_back(argv[i]);
+inline void CmdLine::parse(int argc, const char * const * argv) {
+	// this step is necessary so that we have easy access to
+	// mutable strings.
+	std::vector<std::string> args;
+	for (int i = 0; i < argc; i++) {
+		args.push_back(argv[i]);
+	}
 
-		parse(args);
+	parse(args);
 }
 
-inline void CmdLine::parse(std::vector<std::string>& args)
-{
+inline void CmdLine::parse(std::vector<std::string> &args) {
 	bool shouldExit = false;
 	int estat = 0;
 
 	try {
-		_progName = args.front();
+		_progPath = args.front();
 		args.erase(args.begin());
 
 		int requiredCount = 0;
 
-		for (int i = 0; static_cast<unsigned int>(i) < args.size(); i++) 
-		{
+		for (int i = 0; static_cast<unsigned int>(i) < args.size(); i++) {
 			bool matched = false;
 			for (ArgListIterator it = _argList.begin();
 			     it != _argList.end(); it++) {
-				if ( (*it)->processArg( &i, args ) )
-				{
+				if ( (*it)->processArg( &i, args ) ) {
 					requiredCount += _xorHandler.check( *it );
 					matched = true;
 					break;
@@ -467,22 +496,26 @@ inline void CmdLine::parse(std::vector<std::string>& args)
 
 			// checks to see if the argument is an empty combined
 			// switch and if so, then we've actually matched it
-			if ( !matched && _emptyCombined( args[i] ) )
+			if (!matched && _emptyCombined(args[i])) {
 				matched = true;
+			}
 
-			if ( !matched && !Arg::ignoreRest() )
-				throw(CmdLineParseException("Couldn't find match "
-				                            "for argument",
-				                            args[i]));
+			if ( !matched && !Arg::ignoreRest() ) {
+				throw(CmdLineParseException(
+					"Couldn't find match for argument", args[i]
+				));
+			}
 		}
 
-		if ( requiredCount < _numRequired )
+		if ( requiredCount < _numRequired ) {
 			missingArgsException();
+		}
 
-		if ( requiredCount > _numRequired )
+		if ( requiredCount > _numRequired ) {
 			throw(CmdLineParseException("Too many arguments!"));
+		}
 
-	} catch ( ArgException& e ) {
+	} catch ( ArgException &e ) {
 		// If we're not handling the exceptions, rethrow.
 		if ( !_handleExceptions) {
 			throw;
@@ -504,130 +537,120 @@ inline void CmdLine::parse(std::vector<std::string>& args)
 		shouldExit = true;
 	}
 
-	if (shouldExit)
-		exit(estat);
+	if (shouldExit) exit(estat);
 }
 
-inline bool CmdLine::_emptyCombined(const std::string& s)
-{
-	if ( s.length() > 0 && s[0] != Arg::flagStartChar() )
+inline bool CmdLine::_emptyCombined(const std::string &s) {
+	if ( s.length() > 0 && s[0] != Arg::flagStartChar() ) {
 		return false;
+	}
 
-	for ( int i = 1; static_cast<unsigned int>(i) < s.length(); i++ )
-		if ( s[i] != Arg::blankChar() )
+	for ( int i = 1; static_cast<unsigned int>(i) < s.length(); i++ ) {
+		if ( s[i] != Arg::blankChar() ) {
 			return false;
+		}
+	}
 
 	return true;
 }
 
-inline void CmdLine::missingArgsException()
-{
-		int count = 0;
+inline void CmdLine::missingArgsException() {
+	int count = 0;
 
-		std::string missingArgList;
-		for (ArgListIterator it = _argList.begin(); it != _argList.end(); it++)
-		{
-			if ( (*it)->isRequired() && !(*it)->isSet() )
-			{
-				missingArgList += (*it)->getName();
-				missingArgList += ", ";
-				count++;
-			}
+	std::string missingArgList;
+	for (ArgListIterator it = _argList.begin(); it != _argList.end(); it++) {
+		if ( (*it)->isRequired() && !(*it)->isSet() ) {
+			missingArgList += (*it)->getName();
+			missingArgList += ", ";
+			count++;
 		}
-		missingArgList = missingArgList.substr(0,missingArgList.length()-2);
+	}
+	missingArgList = missingArgList.substr(0,missingArgList.length()-2);
 
-		std::string msg;
-		if ( count > 1 )
-			msg = "Required arguments missing: ";
-		else
-			msg = "Required argument missing: ";
+	std::string msg;
+	if ( count > 1 ) {
+		msg = "Required arguments missing: ";
+	} else {
+		msg = "Required argument missing: ";
+	}
 
-		msg += missingArgList;
+	msg += missingArgList;
 
-		throw(CmdLineParseException(msg));
+	throw(CmdLineParseException(msg));
 }
 
-inline void CmdLine::deleteOnExit(Arg* ptr)
-{
+inline void CmdLine::deleteOnExit(Arg* ptr) {
 	_argDeleteOnExitList.push_back(ptr);
 }
 
-inline void CmdLine::deleteOnExit(Visitor* ptr)
-{
+inline void CmdLine::deleteOnExit(Visitor* ptr) {
 	_visitorDeleteOnExitList.push_back(ptr);
 }
 
-inline CmdLineOutput* CmdLine::getOutput()
-{
+inline CmdLineOutput* CmdLine::getOutput() {
 	return _output;
 }
 
-inline void CmdLine::setOutput(CmdLineOutput* co)
-{
-	if ( !_userSetOutput )
+inline void CmdLine::setOutput(CmdLineOutput* co) {
+	if ( !_userSetOutput ) {
 		delete _output;
+	}
 	_userSetOutput = true;
 	_output = co;
 }
 
-inline std::string& CmdLine::getVersion()
-{
+inline std::string &CmdLine::getVersion() {
 	return _version;
 }
 
-inline std::string& CmdLine::getProgramName()
-{
+inline std::string &CmdLine::getAuthor() {
+	return _author;
+}
+
+inline std::string &CmdLine::getProgramName() {
 	return _progName;
 }
 
-inline std::list<Arg*>& CmdLine::getArgList()
-{
+inline std::string &CmdLine::getProgramPath() {
+	return _progPath;
+}
+
+inline std::list<Arg*> &CmdLine::getArgList() {
 	return _argList;
 }
 
-inline XorHandler& CmdLine::getXorHandler()
-{
+inline XorHandler &CmdLine::getXorHandler() {
 	return _xorHandler;
 }
 
-inline char CmdLine::getDelimiter()
-{
+inline char CmdLine::getDelimiter() {
 	return _delimiter;
 }
 
-inline std::string& CmdLine::getMessage()
-{
+inline std::string &CmdLine::getMessage() {
 	return _message;
 }
 
-inline bool CmdLine::hasHelpAndVersion()
-{
+inline bool CmdLine::hasHelpAndVersion() {
 	return _helpAndVersion;
 }
 
-inline void CmdLine::setExceptionHandling(const bool state)
-{
+inline void CmdLine::setExceptionHandling(const bool state) {
 	_handleExceptions = state;
 }
 
-inline bool CmdLine::getExceptionHandling() const
-{
+inline bool CmdLine::getExceptionHandling() const {
 	return _handleExceptions;
 }
 
-inline void CmdLine::reset()
-{
-	for( ArgListIterator it = _argList.begin(); it != _argList.end(); it++ )
+inline void CmdLine::reset() {
+	for( ArgListIterator it = _argList.begin(); it != _argList.end(); it++ ) {
 		(*it)->reset();
+	}
 	
-	_progName.clear();
+	_progPath.clear();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//End CmdLine.cpp
-///////////////////////////////////////////////////////////////////////////////
-
-
-
 } //namespace TCLAP
+
 #endif

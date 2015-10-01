@@ -53,13 +53,13 @@ class CmdLineInterface
 		 * Adds an argument to the list of arguments to be parsed.
 		 * \param a - Argument to be added. 
 		 */
-		virtual void add( Arg& a )=0;
+		virtual void add(Arg &a)=0;
 
 		/**
 		 * An alternative add.  Functionally identical.
 		 * \param a - Argument to be added. 
 		 */
-		virtual void add( Arg* a )=0;
+		virtual void add(Arg* a)=0;
 
 		/**
 		 * Add two Args that will be xor'd.  
@@ -68,14 +68,14 @@ class CmdLineInterface
 		 * \param a - Argument to be added and xor'd. 
 		 * \param b - Argument to be added and xor'd. 
 		 */
-		virtual void xorAdd( Arg& a, Arg& b )=0;
+		virtual void xorAdd(Arg &a, Arg &b)=0;
 
 		/**
 		 * Add a list of Args that will be xor'd.  If this method is used, 
 		 * add does not need to be called.
 		 * \param xors - List of Args to be added and xor'd. 
 		 */
-		virtual void xorAdd( std::vector<Arg*>& xors )=0;
+		virtual void xorAdd(std::vector<Arg*> &xors)=0;
 
 		/**
 		 * Parses the command line.
@@ -89,7 +89,7 @@ class CmdLineInterface
          * \param args - A vector of strings representing the args. 
          * args[0] is still the program name.
          */
-        void parse(std::vector<std::string>& args);
+        void parse(std::vector<std::string> &args);
 
 		/**
 		 * Returns the CmdLineOutput object.
@@ -104,22 +104,31 @@ class CmdLineInterface
 		/**
 		 * Returns the version string.
 		 */
-		virtual std::string& getVersion()=0;
+		virtual std::string &getVersion()=0;
+
+		/**
+		 * Returns the author string.
+		 */
+		virtual std::string &getAuthor()=0;
 
 		/**
 		 * Returns the program name string.
 		 */
-		virtual std::string& getProgramName()=0;
+		virtual std::string &getProgramName()=0;
 
+		/**
+		 * Returns the program path string.
+		 */
+		virtual std::string &getProgramPath()=0;
 		/**
 		 * Returns the argList. 
 		 */
-		virtual std::list<Arg*>& getArgList()=0;
+		virtual std::list<Arg*> &getArgList()=0;
 
 		/**
 		 * Returns the XorHandler. 
 		 */
-		virtual XorHandler& getXorHandler()=0;
+		virtual XorHandler &getXorHandler()=0;
 
 		/**
 		 * Returns the delimiter string.
@@ -129,7 +138,7 @@ class CmdLineInterface
 		/**
 		 * Returns the message string.
 		 */
-		virtual std::string& getMessage()=0;
+		virtual std::string &getMessage()=0;
 
 		/**
 		 * Indicates whether or not the help and version switches were created
