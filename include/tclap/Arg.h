@@ -661,7 +661,7 @@ inline void Arg::xorSet()
  */
 inline void Arg::addToList( std::list<Arg*>& argList ) const
 {
-	argList.push_front( const_cast<Arg*>(this) );
+	argList.push_back( const_cast<Arg*>(this) );
 }
 
 inline bool Arg::allowMore()
